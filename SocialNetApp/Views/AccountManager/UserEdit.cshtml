@@ -1,0 +1,61 @@
+﻿@model SocialNetApp.ViewModels.Account.UserEditViewModel
+@{
+    ViewData["Title"] = "Редактирование пользователя";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/user-edit.css" />
+}
+
+<div class="profile-container">
+    <h1>Редактирование пользователя</h1>
+
+    <form asp-controller="AccountManager" asp-action="Update" method="post" class="edit-form">
+        <input type="hidden" asp-for="Id"></input>
+        <input type="hidden" asp-for="UserName"></input>
+        <div class="form-field">
+            <label>Имя</label>
+            <input type="text" asp-for="FirstName" class="form-control"/>
+        </div>
+
+        <div class="form-field">
+            <label>Фамилия</label>
+            <input type="text" asp-for="LastName" class="form-control"/>
+        </div>
+
+        <div class="form-field">
+            <label>Отчество</label>
+            <input type="text" asp-for="MiddleName" class="form-control" placeholder="Введите отчество"/>
+        </div>
+
+        <div class="form-field">
+            <label>Дата рождения</label>
+            <input type="date" asp-for="BirthDate" class="form-control" value="@Model.BirthDate.ToString("yyyy-MM-dd")"/>
+        </div>
+
+        <div class="form-field">
+            <label>Email</label>
+            <input type="email" asp-for="Email" class="form-control"/>
+        </div>
+
+        <div class="form-field">
+            <label>Фото профиля (URL)</label>
+            <input type="text" asp-for="Image" class="form-control"/>
+        </div>
+
+        <div class="form-field">
+            <label>Статус</label>
+            <input type="text" asp-for="Status" class="form-control"/>
+        </div>
+
+        <div class="form-field">
+            <label>О себе</label>
+            <textarea asp-for="About" class="form-control"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn_submit">Сохранить</button>
+        </div>
+    </form>
+</div>

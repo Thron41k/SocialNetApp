@@ -1,0 +1,115 @@
+﻿@model SocialNetApp.ViewModels.Account.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<script src="lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+<div class="block-reg background-white">
+    <h3 class="center">Продолжение регистрации</h3>
+    <form class="frm" method="post" asp-controller="Register" asp-action="Register">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="MiddleName" class="form-control" />
+                <span asp-validation-for="MiddleName" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mrgn center">
+            <select asp-for="Date" class="form-control date_control" ID="ddlDay" asp-items="Enumerable.Range(1, 31).Select(x => new SelectListItem(x.ToString(), x.ToString()))">
+                <option value=""></option>
+            </select>
+            <select asp-for="Month" class="form-control date_control" asp-items="Html.GetEnumSelectList<SocialNetApp.ViewModels.Months>()" onchange="PopulateDays()" ID="ddlMonth">
+                <option value=""></option>
+            </select>
+            <select asp-for="Year" class="form-control date_control" ID="ddlYear"
+                    asp-items="Enumerable.Range(DateTime.Now.AddYears(-100).Year, DateTime.Now.AddYears(-14).Year - DateTime.Now.AddYears(-100).Year).Reverse().Select(x => new SelectListItem(x.ToString(), x.ToString()))"
+                    onchange="PopulateDays()">
+                <option value=""></option>
+            </select>
+            <span asp-validation-for="Date" class="text-danger"></span><br />
+            <span asp-validation-for="Month" class="text-danger"></span><br />
+            <span asp-validation-for="Year" class="text-danger"></span>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="Login" class="form-control" />
+                <span asp-validation-for="Login" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="EmailReg" class="form-control" />
+                <span asp-validation-for="EmailReg" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="PasswordReg" class="form-control" />
+                <span asp-validation-for="PasswordReg" class="text-danger"></span>
+            </div>
+        </div>
+        <div>
+            <div class="mrgn">
+                <input asp-for="PasswordConfirm" class="form-control" />
+                <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="center">
+            <input class="btn_submit" type="submit" value="Регистрация" />
+        </div>
+    </form>
+
+    <script type="text/javascript">
+
+         document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                PopulateDays();
+            });
+        });
+
+        function PopulateDays() {
+            let ddlMonth = document.getElementById("ddlMonth");
+            let ddlYear = document.getElementById("ddlYear");
+            let ddlDay = document.getElementById("ddlDay");
+            if(ddlMonth.selectedIndex == 0){
+                ddlDay.options.length = 1;
+                return;
+            }
+            let selected = ddlDay.value;
+            let y = ddlYear.options[ddlYear.selectedIndex].value;
+            let m = ddlMonth.options[ddlMonth.selectedIndex].value != 0;
+            if (ddlMonth.options[ddlMonth.selectedIndex].value != 0 && ddlYear.options[ddlYear.selectedIndex].value != 0) {
+                let dayCount = 32 - new Date(ddlYear.options[ddlYear.selectedIndex].value, ddlMonth.options[ddlMonth.selectedIndex].value - 1, 32).getDate();
+                ddlDay.options.length = 1;
+                for (let i = 1; i <= dayCount; i++) {
+                    AddOption(ddlDay, i, i, selected);
+                }
+            }
+        }
+
+        function AddOption(ddl, text, value, selected) {
+            let opt = document.createElement("OPTION");
+            opt.text = text;
+            opt.value = value;
+            opt.selected = value == selected;
+            ddl.options.add(opt);
+        }
+    </script>
+</div>
