@@ -52,7 +52,34 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
-
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "User" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+    if (await userManager.FindByNameAsync("Admin") == null)
+    {
+        var user = new User
+        {
+            UserName = "Admin",
+            FirstName = "Admin",
+            LastName = "Admin",
+            MiddleName = "Admin",
+            Email = "admin@example.com",
+            BirthDate = DateTime.Parse("01.01.2000"),
+            Image = "https://avatar.iran.liara.run/public/boy",
+            Status = "Admin",
+            About = "Admin"
+        };
+        await userManager.CreateAsync(user, "1234567");
+        await userManager.AddToRoleAsync(user, "Admin");
+    }
+}
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

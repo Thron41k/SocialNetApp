@@ -12,6 +12,8 @@ using SocialNetApp.Extensions;
 using SocialNetApp.Data.Repository;
 using SocialNetApp.Data.UoW.Interfaces;
 using SocialNetApp.Data.UoW;
+using SocialNetApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace SocialNetApp.Controllers.Account
 {
@@ -24,27 +26,36 @@ namespace SocialNetApp.Controllers.Account
     {
         private async Task<SearchViewModel> CreateSearch(string search)
         {
-            var currentuser = User;
-
-            var result = await userManager.GetUserAsync(currentuser);
-
-            var list = userManager.Users.AsEnumerable().Where(x => x.GetFullName().Contains(search,StringComparison.OrdinalIgnoreCase)).ToList();
-            var withfriend = await GetAllFriend();
-
-            var data = new List<UserWithFriendExt>();
-            list.ForEach(x =>
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
             {
-                var t = mapper.Map<UserWithFriendExt>(x);
-                t.IsFriendWithCurrent = withfriend.Count(y => y.Id == x.Id || x.Id == result?.Id) != 0;
-                data.Add(t);
-            });
-
-            var model = new SearchViewModel()
+                return new SearchViewModel { UserList = new List<UserWithFriendExt>() };
+            }
+            var usersQuery = userManager.Users.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                UserList = data
+                usersQuery = usersQuery.Where(x =>
+                    EF.Functions.Like(x.GetFullName(), $"%{search}%"));
+            }
+            var friends = await GetAllFriend();
+            var friendIds = friends.Select(f => f.Id).ToHashSet();
+            var userList = await usersQuery
+                .Select(x => new UserWithFriendExt
+                {
+                    Id = x.Id,
+                    UserName = x.UserName,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    MiddleName = x.MiddleName,
+                    Email = x.Email,
+                    Image = x.Image,
+                    IsFriendWithCurrent = friendIds.Contains(x.Id) || x.Id == currentUser.Id
+                })
+                .ToListAsync();
+            return new SearchViewModel
+            {
+                UserList = userList
             };
-
-            return model;
         }
 
         private async Task<List<User>> GetAllFriend()
@@ -85,11 +96,17 @@ namespace SocialNetApp.Controllers.Account
 
             var result = await userManager.GetUserAsync(user);
 
-            var model = new UserViewModel(result);
+            if (result != null)
+            {
+                var model = new UserViewModel(result);
 
-            model.Friends = await GetAllFriend(model.User);
+                model.Friends = await GetAllFriend(model.User);
+                model.Roles = await userManager.GetRolesAsync(model.User);
 
-            return View("User", model);
+                return View("User", model);
+            }
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [Route("Edit")]
@@ -206,6 +223,108 @@ namespace SocialNetApp.Controllers.Account
 
             return RedirectToAction("MyPage", "AccountManager");
 
+        }
+
+        [Route("Chat")]
+        [HttpPost]
+        public async Task<IActionResult> Chat(string id)
+        {
+            var currentuser = User;
+
+            var result = await userManager.GetUserAsync(currentuser);
+            var friend = await userManager.FindByIdAsync(id);
+
+            var repository = unitOfWork.GetRepository<Message>() as MessageRepository;
+
+            var mess = repository.GetMessages(result, friend);
+
+            var model = new ChatViewModel()
+            {
+                You = result,
+                ToWhom = friend,
+                History = mess.OrderBy(x => x.Id).ToList(),
+            };
+            return View("Chat", model);
+        }
+
+        [Route("NewMessage")]
+        [HttpPost]
+        public async Task<IActionResult> NewMessage(string id, ChatViewModel chat)
+        {
+            var currentuser = User;
+
+            var result = await userManager.GetUserAsync(currentuser);
+            var friend = await userManager.FindByIdAsync(id);
+
+            var repository = unitOfWork.GetRepository<Message>() as MessageRepository;
+
+            var item = new Message()
+            {
+                Sender = result,
+                Recipient = friend,
+                Text = chat.NewMessage.Text,
+            };
+            repository.Create(item);
+
+            var mess = repository.GetMessages(result, friend);
+
+            var model = new ChatViewModel()
+            {
+                You = result,
+                ToWhom = friend,
+                History = mess.OrderBy(x => x.Id).ToList(),
+            };
+            return View("Chat", model);
+        }
+
+        private async Task<ChatViewModel> GenerateChat(string id)
+        {
+            var currentuser = User;
+
+            var result = await userManager.GetUserAsync(currentuser);
+            var friend = await userManager.FindByIdAsync(id);
+
+            var repository = unitOfWork.GetRepository<Message>() as MessageRepository;
+
+            var mess = repository.GetMessages(result, friend);
+
+            var model = new ChatViewModel()
+            {
+                You = result,
+                ToWhom = friend,
+                History = mess.OrderBy(x => x.Id).ToList(),
+            };
+
+            return model;
+        }
+
+        [Route("Chat")]
+        [HttpGet]
+        public async Task<IActionResult> Chat()
+        {
+
+            var id = Request.Query["id"];
+
+            var model = await GenerateChat(id);
+            return View("Chat", model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [Route("Generate")]
+        [HttpGet]
+        public async Task<IActionResult> Generate()
+        {
+
+            var userList = new UserGenerator().GenerateUsers(40);
+
+            foreach (var user in userList)
+            {
+                var result = await userManager.CreateAsync(user, "1234567");
+                if (result.Succeeded)
+                    await userManager.AddToRoleAsync(user, "User");
+            }
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

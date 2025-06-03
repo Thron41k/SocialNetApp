@@ -44,22 +44,6 @@
     color: black;
 }
 
-.btn_submit {
-    background-color: #04AA6D;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s;
-}
-    .btn_submit:hover {
-        background-color: #039962;
-        color: white;
-    }
-
 .frm_text {
     width: 100%;
 }
@@ -100,21 +84,59 @@
     margin: 5px;
 }
 
-.enter_submit {
+.btn_blue {
     background-color: #5181b8;
     color: white;
-    padding: 14px 20px;
+    padding: 8px 16px;
     margin: 8px 0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     width: 100%;
+    height: 40px;
     transition: background-color 0.3s;
 }
-.enter_submit:hover {
-    background-color: #3a6ea5;
+
+    .btn_blue:hover {
+        background-color: #3a6ea5;
+        color: white;
+    }
+
+.btn_red {
+    background-color: #ff4d4d;
     color: white;
+    padding: 8px 16px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    transition: background-color 0.3s;
 }
+
+    .btn_red:hover {
+        background-color: #e60000;
+        color: white;
+    }
+
+.btn_green {
+    background-color: #04AA6D;
+    color: white;
+    padding: 8px 16px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    transition: background-color 0.3s;
+}
+
+    .btn_green:hover {
+        background-color: #039962;
+        color: white;
+    }
 
 .nav-link {
     background-color: #5181b8;
@@ -180,6 +202,7 @@ input[type="checkbox"].input-validation-error {
     transition: background-color 0.3s;
     display: inline-block;
 }
+
     .btn.enter_submit:hover {
         background-color: #3a6ea5;
         color: white;

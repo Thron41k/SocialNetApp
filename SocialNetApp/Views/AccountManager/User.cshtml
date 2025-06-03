@@ -1,19 +1,24 @@
-﻿@model SocialNetApp.ViewModels.Account.UserViewModel
+﻿@using SocialNetApp.Data.Models
+@model SocialNetApp.ViewModels.Account.UserViewModel
 @{
     ViewData["Title"] = Model.User.GetFullName();
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 @section Styles {
     <link rel="stylesheet" href="~/css/user-info.css" />
 }
-
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-image">
             <img src="@Model.User.Image" alt="Фото профиля" class="profile-photo">
             <div class="profile-actions">
-                <a class="btn enter_submit" asp-controller="AccountManager" asp-action="Edit">Редактировать</a>
+                <a class="btn btn_blue" asp-controller="AccountManager" asp-action="Edit">Редактировать</a>
+                @if (Model.Roles.Contains("Admin"))
+                {
+                    <a class="btn btn_green" asp-controller="AccountManager" asp-action="Generate">Добавить пользователей</a>
+                }
             </div>
         </div>
         <div class="profile-info">
@@ -45,9 +50,13 @@
                             <span class="friend-name">@user.GetFullName()</span>
                         
                             <div class="friend-actions">
-                                <a href="#" class="btn-chat">Чат</a>
+                                <form asp-controller="AccountManager" asp-action="Chat" asp-route-id="@user.Id" method="post">
+                                    <button type="submit" class="btn btn_blue">
+                                        Чат
+                                    </button>
+                                </form>
                                 <form asp-controller="AccountManager" asp-action="DeleteFriend" asp-route-id="@user.Id" method="post">
-                                    <button type="submit" class="btn-delete-friend">
+                                    <button type="submit" class="btn btn_red">
                                         Удалить из друзей
                                     </button>
                                 </form>
