@@ -4,7 +4,6 @@
 @inject UserManager<User> UserManager
 
 <div class="auth-buttons">
-    <!-- Добавим ml-auto для выравнивания вправо -->
     @if (SignInManager.IsSignedIn(User))
     {
         <a class="welcome-text" asp-controller="AccountManager" asp-action="MyPage">@User.Identity?.Name</a>
@@ -15,6 +14,6 @@
     else
     {
         <a class="btn btn_blue" asp-controller="Register" asp-action="RegisterPart2">Регистрация</a>
-        <a class="btn btn_blue" asp-area="Identity" asp-page="/Account/Login">Вход</a>
+        <a class="btn btn_blue" asp-controller="Home" asp-action="Index">Вход</a>
     }
 </div>

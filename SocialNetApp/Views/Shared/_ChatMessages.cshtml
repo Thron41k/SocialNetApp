@@ -1,21 +1,26 @@
-﻿@* Views/Chat/_ChatMessages.cshtml *@
+﻿@using System.Globalization
 @model SocialNetApp.ViewModels.Account.ChatViewModel
 
-<div id="messagesList">
+<div id="messagesList" class="messages-container">
     @if (Model.History.Count != 0)
     {
         @foreach (var message in Model.History)
         {
-            <div>
-                <label>@message.Sender.FirstName:</label>
-                @message.Text
+            <div class="message @(message.SenderId == Model.You.Id ? "message-sent" : "message-received")">
+                <div class="message-header">
+                    <span class="message-sender">@message.Sender.FirstName</span>
+                    <span class="message-time" data-utc="@message.CreatedAt.ToString("o")">
+                        @message.CreatedAt.ToString("HH:mm, dd MMM", CultureInfo.InvariantCulture)
+                    </span>
+                </div>
+                <div class="message-content">@message.Text</div>
             </div>
         }
     }
     else
     {
-        <div>
-            <label>У вас пока нет сообщений с @Model.ToWhom.GetFullName().</label>
+        <div class="no-messages">
+            У вас пока нет сообщений с @Model.ToWhom.GetFullName().
         </div>
     }
 </div>

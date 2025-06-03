@@ -6,21 +6,9 @@ using SocialNetApp.ViewModels.Account;
 
 namespace SocialNetApp.Controllers.Account;
 
-public class RegisterController : Controller
+public class RegisterController(IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
+    : Controller
 {
-    private IMapper _mapper;
-
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-
-    public RegisterController(IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
-    {
-        _mapper = mapper;
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
-
-
     [Route("Register")]
     [HttpGet]
     public IActionResult Register()
@@ -43,12 +31,12 @@ public class RegisterController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = _mapper.Map<User>(model);
+            var user = mapper.Map<User>(model);
 
-            var result = await _userManager.CreateAsync(user, model.PasswordReg);
+            var result = await userManager.CreateAsync(user, model.PasswordReg);
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, false);
+                await signInManager.SignInAsync(user, false);
                 return RedirectToAction("Index", "Home");
             }
             else

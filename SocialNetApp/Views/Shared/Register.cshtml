@@ -4,8 +4,10 @@
 
 @model SocialNetApp.ViewModels.Account.RegisterViewModel
 
-<script src="lib/jquery-validation/dist/jquery.validate.js"></script>
-<script src="lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+}
 
 <div class="block-reg background-white">
     <h4 class="center">Впервые с нами?</h4>
@@ -30,7 +32,9 @@
             </div>
         </div>
 
-        <div class="text-color-gray text-size_12">Дата рождения</div>
+        <div class="text-color-gray text-size_12" style="margin-left: 10px;">
+            Дата рождения
+        </div>
         <div class="mrgn center">
             <select asp-for="Date" class="form-control date_control" ID="ddlDay">
             </select>

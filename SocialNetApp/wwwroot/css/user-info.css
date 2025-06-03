@@ -1,4 +1,5 @@
-﻿.profile-header {
+﻿/* Стили для профиля пользователя и списка пользователей */
+.profile-header {
     display: flex;
     gap: 30px;
     margin-bottom: 30px;
@@ -59,10 +60,6 @@
     color: #666;
 }
 
-.profile-actions {
-    text-align: center;
-}
-
 .friends-container {
     width: 100%;
     display: flex;
@@ -98,40 +95,30 @@
     gap: 10px;
 }
 
-.btn-chat {
-    background-color: #5181b8;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s;
-}
-
-    .btn-chat:hover {
-        background-color: #3a6ea5;
-        color: white;
-    }
-
-.btn-delete-friend {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-    .btn-delete-friend:hover {
-        background-color: #e60000;
-    }
-
 .no-friends {
     color: #666;
     text-align: center;
     padding: 20px;
+}
+
+@media screen and (max-width: 600px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-image {
+        flex: 0 0 auto;
+        align-items: center;
+    }
+
+    .friend-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .friend-actions {
+        flex-direction: column;
+        width: 100%;
+    }
 }

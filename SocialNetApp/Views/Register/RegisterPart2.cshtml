@@ -1,11 +1,14 @@
 ﻿@model SocialNetApp.ViewModels.Account.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Регистрация";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<script src="lib/jquery-validation/dist/jquery.validate.js"></script>
-<script src="lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+}
 
 <div class="block-reg background-white">
     <h3 class="center">Продолжение регистрации</h3>
@@ -42,9 +45,9 @@
                     onchange="PopulateDays()">
                 <option value=""></option>
             </select>
-            <span asp-validation-for="Date" class="text-danger"></span><br />
-            <span asp-validation-for="Month" class="text-danger"></span><br />
-            <span asp-validation-for="Year" class="text-danger"></span>
+            <br /><span asp-validation-for="Date" class="text-danger"></span>
+            <br /><span asp-validation-for="Month" class="text-danger"></span>
+            <br /><span asp-validation-for="Year" class="text-danger"></span>
         </div>
         <div>
             <div class="mrgn">

@@ -1,7 +1,7 @@
-﻿namespace SocialNetApp.ViewModels.Account
+﻿namespace SocialNetApp.ViewModels.Account;
+
+public class MessageViewModel
 {
-    public class MessageViewModel
-    {
-        public string Text { get; set; }
-    }
+    public string Text { get; set; }
+    public DateTime Date { get; set; }
 }

@@ -8,6 +8,7 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/user-info.css" />
 }
+
 <div class="profile-container">
     <div class="profile-header">
         <div class="profile-image">
@@ -37,7 +38,6 @@
 
     <div class="profile-section">
         <h2>Список друзей</h2>
-        <!-- Здесь будет список друзей -->
         <div class="friends-list">
             @if (Model.Friends.Count != 0)
             {
@@ -50,14 +50,10 @@
                         
                             <div class="friend-actions">
                                 <form asp-controller="AccountManager" asp-action="Chat" asp-route-id="@user.Id" method="post">
-                                    <button type="submit" class="btn btn_blue">
-                                        Чат
-                                    </button>
+                                    <button type="submit" class="btn btn_blue">Чат</button>
                                 </form>
                                 <form asp-controller="AccountManager" asp-action="DeleteFriend" asp-route-id="@user.Id" method="post">
-                                    <button type="submit" class="btn btn_red">
-                                        Удалить из друзей
-                                    </button>
+                                    <button type="submit" class="btn btn_red">Удалить из друзей</button>
                                 </form>
                             </div>
                         </div>

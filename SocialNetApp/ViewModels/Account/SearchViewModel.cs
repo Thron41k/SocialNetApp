@@ -1,9 +1,8 @@
 ﻿using SocialNetApp.Extensions;
 
-namespace SocialNetApp.ViewModels.Account
+namespace SocialNetApp.ViewModels.Account;
+
+public class SearchViewModel
 {
-    public class SearchViewModel
-    {
-        public List<UserWithFriendExt> UserList = [];
-    }
+    public List<UserWithFriendExt> UserList = [];
 }

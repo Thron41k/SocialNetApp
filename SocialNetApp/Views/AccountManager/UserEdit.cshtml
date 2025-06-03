@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="~/css/user-edit.css" />
 }
 
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+}
+
 <div class="profile-container">
     <h1>Редактирование пользователя</h1>
 
@@ -17,44 +22,52 @@
         <div class="form-field">
             <label>Имя</label>
             <input type="text" asp-for="FirstName" class="form-control"/>
+            <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>Фамилия</label>
             <input type="text" asp-for="LastName" class="form-control"/>
+            <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>Отчество</label>
             <input type="text" asp-for="MiddleName" class="form-control" placeholder="Введите отчество"/>
+            <span asp-validation-for="MiddleName" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>Дата рождения</label>
             <input type="date" asp-for="BirthDate" class="form-control" value="@Model.BirthDate.ToString("yyyy-MM-dd")"/>
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>Email</label>
             <input type="email" asp-for="Email" class="form-control"/>
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>Фото профиля (URL)</label>
             <input type="text" asp-for="Image" class="form-control"/>
+            <span asp-validation-for="Image" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>Статус</label>
             <input type="text" asp-for="Status" class="form-control"/>
+            <span asp-validation-for="Status" class="text-danger"></span>
         </div>
 
         <div class="form-field">
             <label>О себе</label>
             <textarea asp-for="About" class="form-control"></textarea>
+            <span asp-validation-for="About" class="text-danger"></span>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions center">
             <button type="submit" class="btn btn_green">Сохранить</button>
         </div>
     </form>

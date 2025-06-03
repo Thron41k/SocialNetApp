@@ -5,40 +5,54 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/chat.css" />
+}
+
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 
-<div class="block-reg background-white">
-    <div>
+<div class="chat-container">
+    <div class="chat-header">
         <form method="get" asp-controller="AccountManager" asp-action="MyPage">
-            <input class="enter_submit" type="submit" value="Назад" />
+            <button type="submit" class="btn btn-back">
+                <i class="fa fa-arrow-left"></i> Назад
+            </button>
         </form>
+        <h4>Чат с @Model.ToWhom.GetFullName()</h4>
     </div>
 
-    <h4 class="center">Чат @Model.You.FirstName и @Model.ToWhom.FirstName</h4>
-
-    <div class="lined-block">
-        <label class="gray-text">Сообщения</label>
-        <div id="chatContainer">
-            @await Html.PartialAsync("_ChatMessages", Model)
-        </div>
+    <div id="chatContainer" class="messages-container">
+        @await Html.PartialAsync("_ChatMessages", Model)
     </div>
 
-    <div class="lined-block">
-        <label class="gray-text">Новое сообщение</label>
-        <form id="messageForm" class="frm">
+    <div class="chat-input-container">
+        <form id="messageForm" class="message-form">
             <div asp-validation-summary="ModelOnly"></div>
-            <div>
-                <div class="mrgn">
-                    <input id="messageInput" asp-for="NewMessage.Text" class="form-control emojify" type="text" />
-                </div>
-                <div class="center">
-                    <input class="btn_submit" type="submit" value="Отправить" />
-                </div>
+            <div class="input-group">
+                <textarea id="messageInput" asp-for="NewMessage.Text"
+                          class="form-control message-input"
+                          placeholder="Напишите сообщение..."
+                          rows="1"></textarea>
+                <button type="submit" class="btn btn-send">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
             </div>
         </form>
     </div>
 </div>
+
 <script>
+    function scrollToBottom() {
+        const container = document.getElementById("chatContainer");
+        container.scrollTop = container.scrollHeight;
+    }
+
+    const textarea = document.getElementById("messageInput");
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
         .configureLogging(signalR.LogLevel.Information)
@@ -49,6 +63,7 @@
             await connection.start();
             console.log("SignalR Connected.");
             await connection.invoke("JoinChat", "@Model.You.Id", "@Model.ToWhom.Id");
+            scrollToBottom();
         } catch (err) {
             console.log(err);
             setTimeout(start, 5000);
@@ -63,12 +78,15 @@
         const response = await fetch(`/Chat/GetChat?id=@Model.ToWhom.Id`);
         const html = await response.text();
         document.getElementById("chatContainer").innerHTML = html;
+        formatMessageTime();
+        scrollToBottom();
     });
 
     document.getElementById("messageForm").addEventListener("submit", async event => {
         event.preventDefault();
+        const message = document.getElementById("messageInput").value.trim();
+        if (!message) return;
 
-        const message = document.getElementById("messageInput").value;
         try {
             await fetch(`/Chat/SendMessage?recipientId=@Model.ToWhom.Id`, {
                 method: 'POST',
@@ -83,10 +101,33 @@
                 })
             });
             document.getElementById("messageInput").value = '';
+            textarea.style.height = 'auto';
         } catch (error) {
             console.error('Error:', error);
         }
     });
-
-    start();
+    function formatMessageTime() {
+        document.querySelectorAll('.message-time[data-utc]').forEach(element => {
+            let utcTime = element.getAttribute('data-utc');
+            if (!utcTime.endsWith('Z')) {
+                utcTime += 'Z';
+            }
+            try {
+                const localTime = new Date(utcTime);
+                const hours = localTime.getHours().toString().padStart(2, '0');
+                const minutes = localTime.getMinutes().toString().padStart(2, '0');
+                const day = localTime.getDate().toString().padStart(2, '0');
+                const month = localTime.toLocaleString('ru-RU', { month: 'short' }).replace('.', '');
+                element.textContent = `${hours}:${minutes}, ${day} ${month}`;
+                element.removeAttribute('data-utc');
+            } catch (e) {
+                console.error('Error formatting time:', e);
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        start();
+        scrollToBottom();
+        formatMessageTime();
+    });
 </script>

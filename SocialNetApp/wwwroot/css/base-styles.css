@@ -1,34 +1,254 @@
-﻿
+﻿/* Общие стили для всех страниц */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Контейнеры */
+.container.background-main {
+    flex: 1;
+    padding-bottom: 10px;
+}
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.block-reg {
+    margin: 20px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 0, 0 0 0 1px #edeef0;
+}
+
+.background-main {
+    background-color: #edeef0;
+}
+
+.background-white {
+    background-color: #fff;
+}
+
+.center {
+    text-align: center;
+    margin: 5px;
+}
+
+/* Навигация */
 .topnav {
-    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    width: 100%;
+}
+
+.nav-right-section {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+    .navbar-logo:hover {
+        opacity: 0.8;
+    }
+
+.search-container {
+    margin-right: 15px;
+}
+
+    .search-container form {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-container input[type="text"] {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .search-container .fa-search {
+        margin-right: 8px;
+        color: #666;
+    }
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.welcome-text {
+    margin-right: 10px;
+    color: #333;
+}
+
+/* Кнопки */
+.btn {
+    padding: 8px 16px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+.btn_blue {
+    background-color: #5181b8;
+    color: #fff;
+}
+
+    .btn_blue:hover {
+        background-color: #3a6ea5;
+        color: #fff;
+    }
+
+.btn_red {
+    background-color: #ff4d4d;
+    color: #fff;
+}
+
+    .btn_red:hover {
+        background-color: #e60000;
+        color: #fff;
+    }
+
+.btn_green {
+    background-color: #04AA6D;
+    color: #fff;
+}
+
+    .btn_green:hover {
+        background-color: #039962;
+        color: #fff;
+    }
+
+/* Формы */
+.frm {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.form-control {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+    .form-control:focus {
+        border-color: #5181b8;
+        outline: none;
+    }
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.mrgn {
+    margin: 5px;
+}
+
+/* Валидация */
+.field-validation-error {
+    color: #b94a48;
+    font-size: 12px;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* Дата */
+.date_control {
+    width: 32%;
+    display: inline;
+    min-width: max-content;
+}
+
+/* Футер */
+.footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+    background-color: #edeef0;
+    border-top: 1px solid #e5e5e5;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
 }
 
 
-    .topnav .search-container {
-        float: right;
-    }
+/* Текст */
+.text-color-gray {
+    color: slategray;
+}
 
-    .topnav input[type=text] {
-        padding: 6px;
-        font-size: 17px;
-        border: none;
-    }
+.text-size_12 {
+    font-size: 15px;
+}
 
 @media screen and (max-width: 600px) {
-    .topnav .search-container {
-        float: none;
+    .topnav {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-        .topnav a, .topnav input[type=text], .topnav .search-container button {
-            float: none;
-            display: block;
-            text-align: left;
+    .search-container {
+        margin-right: 0;
+        width: 100%;
+    }
+
+        .search-container input[type="text"] {
             width: 100%;
-            margin: 0;
-            padding: 14px;
+            border: 1px solid #ccc;
         }
 
-    .topnav input[type=text] {
-        border: 1px solid #ccc;
+    .auth-buttons {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .btn {
+        width: 100%;
     }
 }
