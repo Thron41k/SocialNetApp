@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using SocialNetApp.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using SocialNetApp.Extensions;
 using SocialNetApp.Data.Repository;
 using SocialNetApp.Data.UoW.Interfaces;
-using SocialNetApp.Data.UoW;
 using SocialNetApp.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,16 +24,22 @@ namespace SocialNetApp.Controllers.Account
             var currentUser = await userManager.GetUserAsync(User);
             if (currentUser == null)
             {
-                return new SearchViewModel { UserList = new List<UserWithFriendExt>() };
+                return new SearchViewModel { UserList = [] };
             }
+
             var usersQuery = userManager.Users.AsQueryable();
+
             if (!string.IsNullOrWhiteSpace(search))
             {
                 usersQuery = usersQuery.Where(x =>
-                    EF.Functions.Like(x.GetFullName(), $"%{search}%"));
+                    EF.Functions.Like(x.LastName, $"%{search}%") ||
+                    EF.Functions.Like(x.FirstName, $"%{search}%") ||
+                    EF.Functions.Like(x.MiddleName, $"%{search}%"));
             }
+
             var friends = await GetAllFriend();
             var friendIds = friends.Select(f => f.Id).ToHashSet();
+
             var userList = await usersQuery
                 .Select(x => new UserWithFriendExt
                 {
@@ -52,6 +53,7 @@ namespace SocialNetApp.Controllers.Account
                     IsFriendWithCurrent = friendIds.Contains(x.Id) || x.Id == currentUser.Id
                 })
                 .ToListAsync();
+
             return new SearchViewModel
             {
                 UserList = userList
@@ -236,7 +238,7 @@ namespace SocialNetApp.Controllers.Account
 
             var repository = unitOfWork.GetRepository<Message>() as MessageRepository;
 
-            var mess = repository.GetMessages(result, friend);
+            var mess = await repository.GetMessages(result, friend);
 
             var model = new ChatViewModel()
             {
@@ -244,7 +246,7 @@ namespace SocialNetApp.Controllers.Account
                 ToWhom = friend,
                 History = mess.OrderBy(x => x.Id).ToList(),
             };
-            return View("Chat", model);
+            return View("~/Views/Chat/Chat.cshtml", model);
         }
 
         [Route("NewMessage")]
@@ -266,7 +268,7 @@ namespace SocialNetApp.Controllers.Account
             };
             repository.Create(item);
 
-            var mess = repository.GetMessages(result, friend);
+            var mess = await repository.GetMessages(result, friend);
 
             var model = new ChatViewModel()
             {
@@ -274,7 +276,7 @@ namespace SocialNetApp.Controllers.Account
                 ToWhom = friend,
                 History = mess.OrderBy(x => x.Id).ToList(),
             };
-            return View("Chat", model);
+            return View("~/Views/Chat/Chat.cshtml", model);
         }
 
         private async Task<ChatViewModel> GenerateChat(string id)
@@ -286,7 +288,7 @@ namespace SocialNetApp.Controllers.Account
 
             var repository = unitOfWork.GetRepository<Message>() as MessageRepository;
 
-            var mess = repository.GetMessages(result, friend);
+            var mess = await repository.GetMessages(result, friend);
 
             var model = new ChatViewModel()
             {
@@ -306,7 +308,7 @@ namespace SocialNetApp.Controllers.Account
             var id = Request.Query["id"];
 
             var model = await GenerateChat(id);
-            return View("Chat", model);
+            return View("~/Views/Chat/Chat.cshtml", model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -315,7 +317,7 @@ namespace SocialNetApp.Controllers.Account
         public async Task<IActionResult> Generate()
         {
 
-            var userList = new UserGenerator().GenerateUsers(40);
+            var userList = UserGenerator.GenerateUsers(40);
 
             foreach (var user in userList)
             {

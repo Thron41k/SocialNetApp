@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SocialNetApp.Migrations
 {
     /// <inheritdoc />
-    public partial class mssqlonprem_migration_935 : Migration
+    public partial class mssqlonprem_migration_517 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

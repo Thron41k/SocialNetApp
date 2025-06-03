@@ -1,0 +1,92 @@
+﻿@model SocialNetApp.ViewModels.Account.ChatViewModel
+
+@{
+    ViewData["Title"] = $"Чат c {Model.ToWhom.FirstName}";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+<div class="block-reg background-white">
+    <div>
+        <form method="get" asp-controller="AccountManager" asp-action="MyPage">
+            <input class="enter_submit" type="submit" value="Назад" />
+        </form>
+    </div>
+
+    <h4 class="center">Чат @Model.You.FirstName и @Model.ToWhom.FirstName</h4>
+
+    <div class="lined-block">
+        <label class="gray-text">Сообщения</label>
+        <div id="chatContainer">
+            @await Html.PartialAsync("_ChatMessages", Model)
+        </div>
+    </div>
+
+    <div class="lined-block">
+        <label class="gray-text">Новое сообщение</label>
+        <form id="messageForm" class="frm">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div>
+                <div class="mrgn">
+                    <input id="messageInput" asp-for="NewMessage.Text" class="form-control emojify" type="text" />
+                </div>
+                <div class="center">
+                    <input class="btn_submit" type="submit" value="Отправить" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    async function start() {
+        try {
+            await connection.start();
+            console.log("SignalR Connected.");
+            await connection.invoke("JoinChat", "@Model.You.Id", "@Model.ToWhom.Id");
+        } catch (err) {
+            console.log(err);
+            setTimeout(start, 5000);
+        }
+    };
+
+    connection.onclose(async () => {
+        await start();
+    });
+
+    connection.on("ReceiveMessage", async (senderId, senderName, message) => {
+        const response = await fetch(`/Chat/GetChat?id=@Model.ToWhom.Id`);
+        const html = await response.text();
+        document.getElementById("chatContainer").innerHTML = html;
+    });
+
+    document.getElementById("messageForm").addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const message = document.getElementById("messageInput").value;
+        try {
+            await fetch(`/Chat/SendMessage?recipientId=@Model.ToWhom.Id`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
+                },
+                body: JSON.stringify({
+                    NewMessage: {
+                        Text: message
+                    }
+                })
+            });
+            document.getElementById("messageInput").value = '';
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    start();
+</script>

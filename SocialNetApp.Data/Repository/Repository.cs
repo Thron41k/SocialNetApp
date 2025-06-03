@@ -11,7 +11,6 @@ public class Repository<T> : IRepository<T>
     protected DbSet<T> Set
     {
         get;
-        private set;
     }
 
     public Repository(ApplicationDbContext db)
@@ -24,21 +23,21 @@ public class Repository<T> : IRepository<T>
     }
 
 
-    public void Create(T item)
+    public async Task Create(T item)
     {
-        Set.Add(item);
-        _db.SaveChanges();
+        await Set.AddAsync(item);
+        await _db.SaveChangesAsync();
     }
 
-    public void Delete(T item)
+    public async Task Delete(T item)
     {
         Set.Remove(item);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
 
-    public T Get(int id)
+    public async Task<T?> Get(int id)
     {
-        return Set.Find(id);
+        return await Set.FindAsync(id);
     }
 
     public IEnumerable<T> GetAll()
@@ -46,9 +45,9 @@ public class Repository<T> : IRepository<T>
         return Set;
     }
 
-    public void Update(T item)
+    public async Task Update(T item)
     {
         Set.Update(item);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
 }

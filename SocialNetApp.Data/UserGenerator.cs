@@ -3,7 +3,7 @@ using SocialNetApp.Data.Models;
 
 namespace SocialNetApp.Data;
 
-public class UserGenerator
+public static class UserGenerator
 {
     private static readonly Random Random = new Random();
     private static readonly List<string> MaleNames =
@@ -32,7 +32,7 @@ public class UserGenerator
     {
         return !isFemale ? $"{PartMiddleNames[index]}ович" : $"{PartMiddleNames[index]}овна";
     }
-    public List<User> GenerateUsers(int count)
+    public static List<User> GenerateUsers(int count)
     {
         var users = new List<User>();
 
@@ -107,7 +107,7 @@ public class UserGenerator
 
     private static string GenerateEmail(string firstName, string lastName)
     {
-        return $"{firstName.ToLower()}.{lastName.ToLower()}@example.com";
+        return ConvertToTranslit($"{firstName.ToLower()}.{lastName.ToLower()}@example.com");
     }
 
     private static DateTime GenerateBirthDate()

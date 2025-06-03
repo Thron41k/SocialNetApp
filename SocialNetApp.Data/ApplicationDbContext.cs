@@ -5,9 +5,13 @@ using SocialNetApp.Data.Configuration;
 
 namespace SocialNetApp.Data;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<User>(options)
+public sealed class ApplicationDbContext : IdentityDbContext<User>
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+        Database.Migrate();
+    }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -12,8 +12,8 @@ using SocialNetApp.Data;
 namespace SocialNetApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250603120927_mssql.onprem_migration_935")]
-    partial class mssqlonprem_migration_935
+    [Migration("20250603165105_mssql.onprem_migration_517")]
+    partial class mssqlonprem_migration_517
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

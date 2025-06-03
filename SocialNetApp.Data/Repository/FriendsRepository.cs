@@ -5,9 +5,9 @@ namespace SocialNetApp.Data.Repository;
 
 public class FriendsRepository(ApplicationDbContext db) : Repository<Friend>(db)
 {
-    public void AddFriend(User target, User Friend)
+    public async Task AddFriend(User target, User friend)
     {
-        var friends = Set.AsEnumerable().FirstOrDefault(x => x.UserId == target.Id && x.CurrentFriendId == Friend.Id);
+        var friends = Set.AsEnumerable().FirstOrDefault(x => x.UserId == target.Id && x.CurrentFriendId == friend.Id);
 
         if (friends == null)
         {
@@ -15,11 +15,11 @@ public class FriendsRepository(ApplicationDbContext db) : Repository<Friend>(db)
             {
                 UserId = target.Id,
                 User = target,
-                CurrentFriend = Friend,
-                CurrentFriendId = Friend.Id,
+                CurrentFriend = friend,
+                CurrentFriendId = friend.Id,
             };
 
-            Create(item);
+            await Create(item);
         }
     }
 
@@ -30,13 +30,13 @@ public class FriendsRepository(ApplicationDbContext db) : Repository<Friend>(db)
         return friends.ToList();
     }
 
-    public void DeleteFriend(User target, User Friend)
+    public async Task DeleteFriend(User target, User friend)
     {
-        var friends = Set.AsEnumerable().FirstOrDefault(x => x.UserId == target.Id && x.CurrentFriendId == Friend.Id);
+        var friends = Set.AsEnumerable().FirstOrDefault(x => x.UserId == target.Id && x.CurrentFriendId == friend.Id);
 
         if (friends != null)
         {
-            Delete(friends);
+            await Delete(friends);
         }
     }
 

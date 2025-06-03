@@ -6,16 +6,21 @@ using SocialNetApp.Data;
 using SocialNetApp.Data.Models;
 using SocialNetApp.Data.Repository;
 using SocialNetApp.Extensions;
+using SocialNetApp.Hubs.SocialNetApp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection"), b => b.MigrationsAssembly("SocialNetApp")))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection"),
+    b => b.MigrationsAssembly("SocialNetApp")));
+
+builder.Services
     .AddUnitOfWork()
     .AddCustomRepository<Message, MessageRepository>()
     .AddCustomRepository<Friend, FriendsRepository>();
+
 builder.Services.AddIdentity<User, IdentityRole>(opts =>
 {
     opts.Password.RequiredLength = 6;
@@ -24,7 +29,8 @@ builder.Services.AddIdentity<User, IdentityRole>(opts =>
     opts.Password.RequireUppercase = false;
     opts.Password.RequireDigit = false;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 var mapperConfig = new MapperConfiguration(v =>
 {
@@ -32,6 +38,9 @@ var mapperConfig = new MapperConfiguration(v =>
 });
 var mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+
+builder.Services.AddSignalR();
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -43,6 +52,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 var cachePeriod = "0";
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -52,16 +62,19 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
+// Seed admin user and roles
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
     var roles = new[] { "Admin", "User" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole(role));
     }
+
     if (await userManager.FindByNameAsync("Admin") == null)
     {
         var user = new User
@@ -80,12 +93,27 @@ using (var scope = app.Services.CreateScope())
         await userManager.AddToRoleAsync(user, "Admin");
     }
 }
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapRazorPages();
+
+app.MapHub<ChatHub>("/chatHub");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "chat",
+    pattern: "Chat/{action=Index}/{id?}",
+    defaults: new { controller = "Chat" });
+
+app.MapControllerRoute(
+    name: "account",
+    pattern: "AccountManager/{action=MyPage}/{id?}",
+    defaults: new { controller = "AccountManager" });
 
 app.Run();

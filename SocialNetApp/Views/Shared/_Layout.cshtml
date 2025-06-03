@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using SocialNetApp.Data.Models
+@inject SignInManager<User> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,31 +17,40 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Styles", required: false)
-    @* @RenderSection("Scripts", required: false) *@
 </head>
 <body class="background-main">
-<header class="border-bottom header background-white">
-    <div class="container">
-        <div class="topnav">
-            <a class="logo" asp-area="" asp-controller="Home" asp-action="Index">SocialNetwork</a>
-            
-            <div class="nav-right-section">
-                <partial name="_SearchLayoutPartial" />
-                <partial name="_LoginPartial" />
+    <header class="border-bottom header background-white">
+        <div class="container">
+            <div class="topnav">
+                @if (!SignInManager.IsSignedIn(User))
+                {
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/logo.png" alt="SocialNetApp" class="navbar-logo">
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="" asp-controller="AccountManager" asp-action="MyPage">
+                        <img src="~/logo.png" alt="SocialNetApp" class="navbar-logo">
+                    </a>
+                }
+                <div class="nav-right-section">
+                    <partial name="_SearchLayoutPartial" />
+                    <partial name="_LoginPartial" />
+                </div>
             </div>
         </div>
+    </header>
+    <div class="container background-main">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-</header>
-<div class="container background-main">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
+    <footer class="border-top footer text-muted">
+        <div class="container">
             &copy; 2025 - SocialNetApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-</footer>
+        </div>
+    </footer>
 </body>
 </html>
